@@ -1,31 +1,18 @@
 ---
-
 - name: "Apache installation using docker"
   hosts: prod
   become: true
-  vars:
-    ansible_sudo_pass: admin
   pre_tasks:
-    - name: Install EPEL repo
-      package: name=epel-release state=present
-      when: ansible_distribution == "CentOS"
     - name: download pip script
       get_url:
         url: https://bootstrap.pypa.io/pip/2.7/get-pip.py
         dest: /tmp/get-pip.py
+
     - name: install python-pip
       command: python2.7 /tmp/get-pip.py
+
     - name: Install docker python
       pip: name=docker-py
-    - name: Install git and wget
-      yum:
-        name: '{{ package }}'
-        state: present
-      vars:
-        package:
-            - git
-            - wget
-      when: ansible_distribution == "CentOS"
   tasks:
     - name: Template a file to /etc/files.conf
       template:
@@ -38,4 +25,4 @@
         ports:
           - "80:80"
         volumes:
-        - /etc/index.html:/usr/local/apache2/conf/httpd.conf
+        - /etc/index.html:/usr/local/apache2/htdocs/index.html
